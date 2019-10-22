@@ -150,9 +150,13 @@ class TileGrid:
             row_i += 1
         dwg.save()
 
+    def toUni(self):
+        import uni
+        for row in self.internal:
+            print("".join([uni.tileToToken(t) for t in row]))
+
 print("WANG IMPORTED.")
 
-
-    # dwg = svgwrite.Drawing('wang.svg', profile='tiny')
-    # dwg.add(dwg.polygon(points=[(0,0), (10,10), (20,0)]).fill("blue"))
-    # dwg.save()
+# dwg = svgwrite.Drawing('wang.svg', profile='tiny')
+# dwg.add(dwg.polygon(points=[(0,0), (10,10), (20,0)]).fill("blue"))
+# dwg.save()
