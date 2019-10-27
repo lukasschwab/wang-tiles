@@ -11,6 +11,12 @@ svgColors = {
     3: "green",
     4: "yellow"
 }
+altSvgColors = {
+    1: "steelblue",
+    2: "teal",
+    3: "lemonchiffon",
+    4: "lightgreen"
+}
 
 # SVG
 tileEdgeLength = 20
@@ -138,16 +144,16 @@ class Grid:
                     souths.append("•")
             print("", "  ".join(souths), "")
 
-    def toSVG(self, filename="wang.svg"):
+    def toSVG(self, filename="wang.svg", clrs=svgColors):
         dwg = svgwrite.Drawing(filename)
         row_i = 0
         for row in self.internal:
             col_i = 0
             for tile in row:
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "north")).fill(svgColors[tile.north]))
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "east")).fill(svgColors[tile.east]))
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "south")).fill(svgColors[tile.south]))
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "west")).fill(svgColors[tile.west]))
+                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "north")).fill(clrs[tile.north]))
+                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "east")).fill(clrs[tile.east]))
+                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "south")).fill(clrs[tile.south]))
+                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "west")).fill(clrs[tile.west]))
                 col_i += 1
             row_i += 1
         dwg.save()
