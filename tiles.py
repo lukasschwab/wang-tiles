@@ -145,7 +145,7 @@ class Grid:
             print("", "  ".join(souths), "")
 
     def toSVG(self, filename="wang.svg", clrs=svgColors):
-        dwg = svgwrite.Drawing(filename)
+        dwg = svgwrite.Drawing(filename, size=(str(10 * self.cols), str(10 * self.rows)))
         row_i = 0
         for row in self.internal:
             col_i = 0
