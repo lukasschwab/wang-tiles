@@ -73,6 +73,8 @@ class Grid:
     def __init__(self, height, width):
         assert width > 0;
         assert height > 0;
+        self.rows = height
+        self.cols = width
         self.internal = [[ None ] * width for h in range(height)]
 
     def get(self, row, col):

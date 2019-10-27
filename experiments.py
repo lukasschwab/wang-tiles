@@ -1,5 +1,5 @@
 # REPL shortcuts
-import importlib
+import importlib, os
 
 def rl():
     importlib.reload(tiles)
@@ -8,14 +8,26 @@ def rl():
 def x():
     exit()
 
+# Default number of rows and columns for grids.
+def_rows, def_cols = 10, 10
+
+# fill produces a grid that'll unicode-print to the size of the terminal.
+# F is some function that takes the named arguments ROWS (int), COLS (int); most
+# of the grid-generating functions here conform to that interface.
+def fill(f):
+    global def_rows, def_cols
+    # Get dimensions of the open terminal.
+    term_rows, term_cols = os.popen('stty size', 'r').read().split()
+    return f(rows=int(term_rows), cols=int(term_cols))
+
 # Experiments
 import tiles, uni, random
 
 def randomTile():
     return tiles.Tile(tiles.colors)
 
-# fillSquare returns a grid filled with randomly selected tiles.
-def fillSquare(rows=10, cols=10):
+# fullGrid returns a grid filled with randomly selected tiles.
+def fullGrid(rows=def_rows, cols=def_cols):
     grid = tiles.Grid(rows, cols)
     for row in range(rows):
         for col in range(cols):
@@ -24,8 +36,8 @@ def fillSquare(rows=10, cols=10):
                 tile = randomTile()
     return grid
 
-# fillSquareMinimal prefers previously-seen tiles to random new tiles.
-def fillSquareMinimal(rows=10, cols=10):
+# fullGridMinimal prefers previously-seen tiles to random new tiles.
+def fullGridMinimal(rows=def_rows, cols=def_cols):
     grid = tiles.Grid(rows, cols)
     known = set([randomTile()])
     for row in range(rows):
@@ -40,11 +52,11 @@ def fillSquareMinimal(rows=10, cols=10):
     print("Used this many tiles:", len(known))
     return grid
 
-# fillUnicodableSquare returns a grid with dimensions ROWS, COLS that is filled
+# fullUnicodableGrid returns a grid with dimensions ROWS, COLS that is filled
 # with only unicode-mapped tiles (according to the mapping in uni.py).
 # Following the 'minimal' pattern helps to avoid deadlock; so does limiting to
 # the set of simple (non-strong, non-double) tiles.
-def fillUnicodableSquare(rows=10, cols=10, simple=False):
+def fullUnicodableGrid(rows=def_rows, cols=def_cols, simple=False):
     f = uni.mapsToSimpleToken if simple else uni.mapsToToken
     grid = tiles.Grid(rows, cols)
     known = set([randomTile()])
@@ -58,4 +70,30 @@ def fillUnicodableSquare(rows=10, cols=10, simple=False):
                     tile = randomTile()
                 known.add(tile)
     print("Used this many tiles:", len(known))
+    return grid
+
+def keyToTile(key):
+    assert len(key) is 4
+    t = tiles.Tile(tiles.colors)
+    dirs = ["north", "east", "south", "west"]
+    t.north = uni.letterToColor[key[0]]
+    t.east = uni.letterToColor[key[1]]
+    t.south = uni.letterToColor[key[2]]
+    t.west = uni.letterToColor[key[3]]
+    return t
+
+wallKeys = ["WWWW", "WWWN", "WWNW", "WNWW", "NWWW", "WWNN", "WNWN", "WNNW", "NWWN", "NWNW", "NNWW", "NNNW", "NNWN", "NWNN", "WNNN", "NNNN"]
+wallTiles = [keyToTile(key) for key in wallKeys]
+
+def fullWallGrid(rows=def_rows, cols=def_cols):
+    grid = tiles.Grid(rows, cols)
+    for row in range(rows):
+        for col in range(cols):
+            random.shuffle(wallTiles)
+            for tile in wallTiles:
+                if grid.insert(tile, row, col):
+                    break
+            else:
+                print("Error: couldn't get a suitable tile.")
+                return grid
     return grid

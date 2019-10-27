@@ -122,6 +122,8 @@ colorToLetter = {
     4: "N", # None
 }
 
+letterToColor = dict(zip(colorToLetter.values(), colorToLetter.keys()))
+
 # TODO: need to restrict tiles to the set of legal unicode box tokens.
 
 notFoundTokens = set()
@@ -151,6 +153,7 @@ def mapsToSimpleToken(tile):
         return False
     return _getToken(key) is not " "
 
-def tileToToken(tile):
+def tileToToken(tile, simplest=True):
     s = "".join([colorToLetter[c] for c in [tile.north, tile.east, tile.south, tile.west]])
-    return random.choice(_getToken(s))
+    tokens = _getToken(s)
+    return tokens[0] if simplest else random.choice(tokens)
