@@ -1,32 +1,36 @@
-# Wang tiles.
+import random
+import svg, uni
 
-import random, svgwrite
-import svgcolors, uni
+# COLORS are a schema of unspecified colors. To add more colors, extend the list
+# here and ensure that the dicts in svg.py and uni.py are updated to contain
+# all additional color keys.
+COLORS = [1,2,3,4]
 
-DIRECTIONS = set(["north", "east", "south", "west"])
-
-colors = [1,2,3,4]
-
-# SVG
-tileEdgeLength = 20
-tileEdgeMidpoint = tileEdgeLength / 2
-
+# Class Tile represents a single Wang tile with four sides that can be assembled
+# into a Grid of Wang tiles.
 class Tile:
+    # Construct a new Tile with edges randomly selected from COLORS.
     def __init__(self, colors):
         self.north = random.choice(colors)
         self.east = random.choice(colors)
         self.south = random.choice(colors)
         self.west = random.choice(colors)
 
-    def prettyPrint(self):
+    # pretty_print produces a diamond-shaped numerical representation of this
+    # Tile identical to its representation in a Grid.pretty_print output.
+    def pretty_print(self):
         print("", self.north)
         print(self.west, self.east)
         print("", self.south)
 
-    def canFit(self, otherTile, direction):
-        assert direction in DIRECTIONS
+    # can_fit returns true iff OTHERTILE can be placed adjacent to this Tile in
+    # direction DIRECTION.
+    #
+    # e.g. suppose direction="north", otherTile.south=1, and self.north=1. Then
+    # can_fit(self, otherTile, direction) will return True.
+    def can_fit(self, otherTile, direction):
+        assert direction in set(["north", "east", "south", "west"])
         if otherTile == None:
-            print("Other tile is none.")
             return True
         canFitDirections = {
             "north": self.north == otherTile.south,
@@ -36,35 +40,10 @@ class Tile:
         }
         return canFitDirections[direction]
 
-def getTrianglePoints(row, col, direction):
-    assert direction in DIRECTIONS
-    col_offset = col * tileEdgeLength
-    row_offset = row * tileEdgeLength
-    cases = {
-        "north": [
-            (col_offset + 0, row_offset + 0),
-            (col_offset + tileEdgeMidpoint, row_offset + tileEdgeMidpoint),
-            (col_offset + tileEdgeLength, row_offset + 0)
-        ],
-        "east": [
-            (col_offset + tileEdgeLength, row_offset + 0),
-            (col_offset + tileEdgeMidpoint, row_offset + tileEdgeMidpoint),
-            (col_offset + tileEdgeLength, row_offset + tileEdgeLength)
-        ],
-        "south": [
-            (col_offset + tileEdgeLength, row_offset + tileEdgeLength),
-            (col_offset + tileEdgeMidpoint, row_offset + tileEdgeMidpoint),
-            (col_offset + 0, row_offset + tileEdgeLength)
-        ],
-        "west": [
-            (col_offset + 0, row_offset + 0),
-            (col_offset + tileEdgeMidpoint, row_offset + tileEdgeMidpoint),
-            (col_offset + 0, row_offset + tileEdgeLength)
-        ]
-    }
-    return cases[direction]
-
+# Class Grid represents a mutable grid of None-able Wang tiles with a fixed
+# dimension.
 class Grid:
+    # Construct a new empty (None-filled) grid with dimensions HEIGHT, WIDTH.
     def __init__(self, height, width):
         assert width > 0;
         assert height > 0;
@@ -72,42 +51,50 @@ class Grid:
         self.cols = width
         self.internal = [[ None ] * width for h in range(height)]
 
+    # get returns the Tile (None-able) at position row, col in this Grid.
     def get(self, row, col):
-        if not self.isInBounds(row, col):
+        if not self.is_in_bounds(row, col):
             return None
         return self.internal[row][col]
 
-    def isInBounds(self, row, col):
+    # is_in_bounds returns True iff the position row, col is a valid position in
+    # this grid.
+    def is_in_bounds(self, row, col):
         return row >= 0 and row < len(self.internal) and col >= 0 and col < len(self.internal[0])
 
-    def canFit(self, newTile, row, col):
+    # can_fit returns True iff NEWTILE can be placed at position row, col in
+    # this Grid, i.e. the position is unoccupied (None) and the Wang tile rule
+    # (that adjacent edges must match colors) would not be violated by this
+    # placement.
+    def can_fit(self, newTile, row, col):
         # Don't allow double-placement.
         if (self.internal[row][col] is not None):
             print("OCCUPIED")
             return False
         out = True
         toNorth = self.get(row - 1, col)
-        if toNorth is not None:
-            out = out and newTile.canFit(toNorth, "north")
+        out = out and newTile.can_fit(toNorth, "north")
         toEast = self.get(row, col + 1)
-        if toEast is not None:
-            out = out and  newTile.canFit(toEast, "east")
+        out = out and  newTile.can_fit(toEast, "east")
         toSouth = self.get(row + 1, col)
-        if toSouth is not None:
-            out = out and newTile.canFit(toSouth, "south")
+        out = out and newTile.can_fit(toSouth, "south")
         toWest = self.get(row, col - 1)
-        if toWest is not None:
-            out = out and newTile.canFit(toWest, "west")
+        out = out and newTile.can_fit(toWest, "west")
         return out
 
+    # insert attempts to insert NEWTILE at position row, col in this Grid and
+    # returns True iff the insertion succeeded (i.e. the grid is updated).
     def insert(self, newTile, row, col):
-        assert self.isInBounds(row, col)
-        if not self.canFit(newTile, row, col):
+        assert self.is_in_bounds(row, col)
+        if not self.can_fit(newTile, row, col):
             return False
         self.internal[row][col] = newTile
         return True
 
-    def prettyPrint(self):
+    # pretty_print returns a numberic representation of the numbered edge-
+    # adjacencies in this Grid. This representation is actually not very pretty
+    # compared to the SVG output produced by to_svg.
+    def pretty_print(self):
         for row in self.internal:
             # Print north directions.
             norths = []
@@ -133,20 +120,14 @@ class Grid:
                     souths.append("•")
             print("", "  ".join(souths), "")
 
-    def toSVG(self, filename="wang.svg", clrs=svgcolors.wada_281):
-        dwg = svgwrite.Drawing(filename, size=(str(10 * self.cols), str(10 * self.rows)))
-        row_i = 0
-        for row in self.internal:
-            col_i = 0
-            for tile in row:
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "north")).fill(clrs[tile.north]))
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "east")).fill(clrs[tile.east]))
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "south")).fill(clrs[tile.south]))
-                dwg.add(dwg.polygon(points=getTrianglePoints(row_i, col_i, "west")).fill(clrs[tile.west]))
-                col_i += 1
-            row_i += 1
-        dwg.save()
+    # to_svg writes a default SVG representation of this Grid to file.
+    def to_svg(self):
+        return svg.to_svg(self)
 
-    def toUni(self):
-        for row in self.internal:
-            print("".join([uni.tile_to_token(t) for t in row]))
+    # to_uni prints and returns a unicode representation of this grid. Note: the
+    # tiles in this grid are not guaranteed to map to unicode box-drawing
+    # characters unless this property has been confirmed upon insertion.
+    def to_uni(self):
+        out = uni.to_uni(self)
+        print(out)
+        return out

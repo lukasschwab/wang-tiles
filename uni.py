@@ -187,3 +187,8 @@ def maps_to_simple_token(tile):
 def tile_to_token(tile, simplest=True):
     tokens = _get_tokens(_get_key(tile))
     return tokens[0] if simplest else random.choice(tokens)
+
+# to_uni returns a unicode string representation of GRID.
+def to_uni(grid):
+    rows = ["".join([tile_to_token(t) for t in row]) for row in grid.internal]
+    return u"\n".join(rows)
