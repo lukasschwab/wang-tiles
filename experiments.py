@@ -82,7 +82,7 @@ def keyToTile(key):
     t.west = uni.letterToColor[key[3]]
     return t
 
-wallKeys = ["WWWW", "WWWN", "WWNW", "WNWW", "NWWW", "WWNN", "WNWN", "WNNW", "NWWN", "NWNW", "NNWW", "NNNW", "NNWN", "NWNN", "WNNN", "NNNN"]
+wallKeys = ["WWWW", "WWWN", "WWNW", "WNWW", "NWWW", "WWNN", "WNWN", "WNNW", "NWWN", "NWNW", "NNWW", "NNNW", "NNWN", "NWNN", "WNNN", "NNNN", "NNNN"]
 wallTiles = [keyToTile(key) for key in wallKeys]
 
 def fullWallGrid(rows=def_rows, cols=def_cols):
