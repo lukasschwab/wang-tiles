@@ -14,6 +14,12 @@ As I've only been playing around with configurations, these files are ill-design
 
 **Mess around in the REPL:** `make repl`
 
+Most of the functions of interest are defined in `experiments.py`. My personal favorite:
+
+```python
+>>> full_minimal_grid(50,50).to_svg()
+```
+
 ## Notes
 
 One set of unicode-printable tiles produced a Sierpinski triangle of its own accord; that lives in the `outputs` directory, along with any other interesting output I find along the way.
