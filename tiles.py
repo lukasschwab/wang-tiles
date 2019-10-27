@@ -69,7 +69,7 @@ def getTrianglePoints(row, col, direction):
     }
     return cases[direction]
 
-class TileGrid:
+class Grid:
     def __init__(self, height, width):
         assert width > 0;
         assert height > 0;
@@ -154,8 +154,6 @@ class TileGrid:
         import uni
         for row in self.internal:
             print("".join([uni.tileToToken(t) for t in row]))
-
-print("WANG IMPORTED.")
 
 # dwg = svgwrite.Drawing('wang.svg', profile='tiny')
 # dwg.add(dwg.polygon(points=[(0,0), (10,10), (20,0)]).fill("blue"))
