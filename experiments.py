@@ -57,7 +57,7 @@ def fullGridMinimal(rows=def_rows, cols=def_cols):
 # Following the 'minimal' pattern helps to avoid deadlock; so does limiting to
 # the set of simple (non-strong, non-double) tiles.
 def fullUnicodableGrid(rows=def_rows, cols=def_cols, simple=False):
-    f = uni.mapsToSimpleToken if simple else uni.mapsToToken
+    f = uni.maps_to_simple_token if simple else uni.maps_to_token
     grid = tiles.Grid(rows, cols)
     known = set([randomTile()])
     for row in range(rows):
@@ -76,10 +76,10 @@ def keyToTile(key):
     assert len(key) is 4
     t = tiles.Tile(tiles.colors)
     dirs = ["north", "east", "south", "west"]
-    t.north = uni.letterToColor[key[0]]
-    t.east = uni.letterToColor[key[1]]
-    t.south = uni.letterToColor[key[2]]
-    t.west = uni.letterToColor[key[3]]
+    t.north = uni.letter_to_color[key[0]]
+    t.east = uni.letter_to_color[key[1]]
+    t.south = uni.letter_to_color[key[2]]
+    t.west = uni.letter_to_color[key[3]]
     return t
 
 wallKeys = ["WWWW", "WWWN", "WWNW", "WNWW", "NWWW", "WWNN", "WNWN", "WNNW", "NWWN", "NWNW", "NNWW", "NNNW", "NNWN", "NWNN", "WNNN", "NNNN", "NNNN"]

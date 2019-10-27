@@ -149,4 +149,4 @@ class Grid:
 
     def toUni(self):
         for row in self.internal:
-            print("".join([uni.tileToToken(t) for t in row]))
+            print("".join([uni.tile_to_token(t) for t in row]))
