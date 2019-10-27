@@ -1,5 +1,7 @@
 import random
 
+# This file contains an extended experiment: to use ASCII drawing
+
 tokens = {
     "NNNN": " ",
     "NWNW": "─┄┈╌",
@@ -130,6 +132,24 @@ def _getToken(key):
     except:
         notFoundTokens.add(key)
         return " "
+
+def _getKey(tile):
+    return "".join([colorToLetter[c] for c in [
+        tile.north,
+        tile.south,
+        tile.east,
+        tile.west
+    ]])
+
+def mapsToToken(tile):
+    return _getToken(_getKey(tile)) is not " "
+
+def mapsToSimpleToken(tile):
+    key = _getKey(tile)
+    # Exclude strong and double lines: they have limited tilesets.
+    if 'S' in key or 'D' in key:
+        return False
+    return _getToken(key) is not " "
 
 def tileToToken(tile):
     s = "".join([colorToLetter[c] for c in [tile.north, tile.east, tile.south, tile.west]])
