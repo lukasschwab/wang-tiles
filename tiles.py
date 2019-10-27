@@ -1,22 +1,11 @@
 # Wang tiles.
 
 import random, svgwrite
+import svgcolors, uni
 
 DIRECTIONS = set(["north", "east", "south", "west"])
 
 colors = [1,2,3,4]
-svgColors = {
-    1: "blue",
-    2: "purple",
-    3: "green",
-    4: "yellow"
-}
-altSvgColors = {
-    1: "steelblue",
-    2: "teal",
-    3: "lemonchiffon",
-    4: "lightgreen"
-}
 
 # SVG
 tileEdgeLength = 20
@@ -144,7 +133,7 @@ class Grid:
                     souths.append("•")
             print("", "  ".join(souths), "")
 
-    def toSVG(self, filename="wang.svg", clrs=svgColors):
+    def toSVG(self, filename="wang.svg", clrs=svgcolors.wada_281):
         dwg = svgwrite.Drawing(filename, size=(str(10 * self.cols), str(10 * self.rows)))
         row_i = 0
         for row in self.internal:
@@ -159,10 +148,5 @@ class Grid:
         dwg.save()
 
     def toUni(self):
-        import uni
         for row in self.internal:
             print("".join([uni.tileToToken(t) for t in row]))
-
-# dwg = svgwrite.Drawing('wang.svg', profile='tiny')
-# dwg.add(dwg.polygon(points=[(0,0), (10,10), (20,0)]).fill("blue"))
-# dwg.save()
