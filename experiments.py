@@ -1,10 +1,5 @@
 import importlib, os, random
-import tiles, uni
-
-# REPL shortcut: reload tiles.py if you've changed it.
-def rl():
-    importlib.reload(tiles)
-    print("Reloaded tiles.py")
+import tiles, uni, svg
 
 # REPL shortcut: lazy exit.
 x = exit
